@@ -20,3 +20,4 @@ class AdbotItem(scrapy.Item):
     date = scrapy.Field()
     contact = scrapy.Field()
     url = scrapy.Field()
+    images = scrapy.Field()

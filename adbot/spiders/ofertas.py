@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import dateparser
+import datetime
+from dateutil.parser import parse
 from functools import partial
 from adbot.items import AdbotItem
 
@@ -46,7 +48,7 @@ class OfertasSpider(scrapy.Spider):
         date = response.xpath('//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//time/attribute::datetime').extract()
         if len(date) == 1:
             date = date[0]
-            item['date'] = dateparser.parse(date, languages=['es'])
+            item['date'] = parse(date) #dateparser.parse(date, languages=['es'])
         
         item['contact'] = {}
         item['contact']['name'] = response.xpath('//div[@class="ad-reply-options"]//p[@class="lead"]/text()').extract()
