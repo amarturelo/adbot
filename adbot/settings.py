@@ -64,16 +64,16 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#     'scrapyelasticsearch.scrapyelasticsearch.ElasticSearchPipeline': 300,
-#     'adbot.pipelines.AdbotPipeline': 500,
-# }
-# 
-# ELASTICSEARCH_SERVERS = ['http://10.3.201.213:9200']
-# ELASTICSEARCH_INDEX = 'ad'
-# #ELASTICSEARCH_INDEX_DATE_FORMAT = '%Y-%m'
-# ELASTICSEARCH_TYPE = 'items'
-# ELASTICSEARCH_UNIQ_KEY = 'url'  # Custom unique key
+ITEM_PIPELINES = {
+    'scrapyelasticsearch.scrapyelasticsearch.ElasticSearchPipeline': 300,
+    'adbot.pipelines.AdbotPipeline': 500,
+}
+
+ELASTICSEARCH_SERVERS = ['http://10.3.201.213:9200']
+ELASTICSEARCH_INDEX = 'ad'
+#ELASTICSEARCH_INDEX_DATE_FORMAT = '%Y-%m'
+ELASTICSEARCH_TYPE = 'items'
+ELASTICSEARCH_UNIQ_KEY = 'url'  # Custom unique key
 
 # can also accept a list of fields if need a composite key
 #ELASTICSEARCH_UNIQ_KEY = ['url', 'id']
