@@ -12,7 +12,7 @@ class OfertasSpider(scrapy.Spider):
     start_urls = [
         'http://ofertas.cu/'
     ]
-    depth = 0
+    level = 0
 
     map_category = {
         '/c/390/pc/': "10",
