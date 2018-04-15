@@ -2,6 +2,7 @@
 import scrapy
 import dateparser
 import datetime
+from money_parser import price_str
 from dateutil.parser import parse
 from functools import partial
 from adbot.items import AdbotItem
@@ -12,25 +13,20 @@ class UncucSpider(scrapy.Spider):
     allowed_domains = ['1cuc.com']
     start_urls = ['https://1cuc.com/']
 
-    depth = 0
+    level = 0
 
     def parse(self, response):
         # find by category
         for href in response.xpath(
                 '//div[@class="index__catlist hidden-phone"]//div[@class="index__catlist__item i0" or @class="index__catlist__item i1"]//div[@class="title"]//a/attribute::href').extract():
-            yield scrapy.Request(response.urljoin(href), callback=partial(self.parse_page, depth=int(self.depth)))
+            yield scrapy.Request(response.urljoin(href),
+                                 callback=self.parse_page,
+                                 meta={'level': self.level})
 
-    def parse_page(self, response, depth=0):
+    def parse_page(self, response):
         # find by item
-        print("::category ", response)
         for href in response.xpath('//td[@class="sr-page__list__item_descr"]//h3//a/attribute::href').extract():
-            print("::item ", href)
             yield scrapy.Request(response.urljoin(href), callback=self.parse_item)
-
-        # if depth > 0:
-        # next = response.xpath('//ul[@class="pagination"]//a[@title="Siguiente"]/attribute::href').extract()
-        # if next:
-        # yield scrapy.Request(response.urljoin(next[0]), callback=partial(self.parse_page,depth = depth-1))
 
     def parse_item(self, response):
         item = AdbotItem()
@@ -40,17 +36,18 @@ class UncucSpider(scrapy.Spider):
         item['price'] = {}
         price = response.xpath('//div[@class="l-right hidden-phone"]//div[@class="v-price only"]//b/text()').extract()
 
-        # TODO hay que corregir el parceo del precio pk 2 200 CUC se jode
         if len(price) == 1:
-            price = price[0].split(" ")
-            item['price']['value'] = price[0]
-            item['price']['currency'] = price[1]
+            price = price[0].replace(" ", "")
+
+            value = price_str(price)
+            item['price']['value'] = value
+
+            split_price = price.split(value)
+            if len(split_price) == 2:
+                item['price']['currency'] = split_price[1]
 
         date = response.xpath('//div[@class="l-main__content"]//div[@class="v-info"]//small/text()').extract()
         date = date[1]
-        print("::::::::::leng", len(date))
-        print("::::::::::date", date)
-
         date = date.split(':')
         date = date[1]
         # TODO falta convertir a long la fecha
@@ -63,10 +60,18 @@ class UncucSpider(scrapy.Spider):
         item['url'] = response.url
 
         item['images'] = []
-        item['images'] = response.xpath('//img[@class="rev_img"]/attribute::src').extract()
-        # TODO hacer cuando halla un colach de imagenes
-        # if len(images) == 0:
-        # item['images']= response.xpath('//div[@class="fotorama__html"]//div[@data-img]/text()').extract()
+        item['images'] = self.parse_images(response)
         print("::item ", item)
 
         yield item
+
+    def parse_images(self, response):
+        images = response.xpath(
+            '//img[@class="rev_img"]/attribute::src').extract()
+
+        result = []
+
+        for item in images:
+            result.append("https:" + item)
+
+        return result

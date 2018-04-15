@@ -2,6 +2,7 @@
 import scrapy
 import string
 from dateutil.parser import parse
+from money_parser import price_str
 
 from adbot.items import AdbotItem
 
@@ -95,7 +96,7 @@ class OfertasSpider(scrapy.Spider):
         for href in response.xpath('//ul[@class="categories"]//a/attribute::href').extract():
             yield scrapy.Request(response.urljoin(href),
                                  callback=self.parse_page,
-                                 meta={'level': self.depth})
+                                 meta={'level': self.level})
         # next = response.xpath('//ul[@class="categories"]//a/attribute::href').extract()[1]
         # request = scrapy.Request(response.urljoin(next),
         #                          callback=self.parse_page,
@@ -121,8 +122,6 @@ class OfertasSpider(scrapy.Spider):
         item = AdbotItem()
         item['title'] = response.xpath(
             '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//h2/text()').extract()
-        # item['body'] = '\n'.join(response.xpath(
-        #     '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//p[@class="ad-description"]/text()').extract())
 
         item['body'] = self.parse_body(response)
 
@@ -131,10 +130,17 @@ class OfertasSpider(scrapy.Spider):
         price = response.xpath(
             '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//p[@class="price"]/text()').extract()
 
+        # if len(price) == 1:
+        #     price = price[0].split(" ")
+        #     item['price']['value'] = float(price[0].replace("$", "").replace(",", "."))
+        #     item['price']['currency'] = price[1]
+
         if len(price) == 1:
-            price = price[0].split(" ")
-            item['price']['value'] = float(price[0].replace("$", "").replace(",", "."))
-            item['price']['currency'] = price[1]
+            price = price[0].replace(" ", "")
+
+            value = price_str(price)
+            item['price']['value'] = value
+            item['price']['currency'] = self.parse_currency(price)
 
         date = response.xpath(
             '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//time/attribute::datetime').extract()
@@ -160,12 +166,6 @@ class OfertasSpider(scrapy.Spider):
         return 0
 
     def parse_body(self, response):
-
-        # s = "some\x00string. with\x15 funny characters"
-        #
-        # printable = set(string.printable)
-        # filter(lambda x: x in printable, s)
-
         body = response.xpath(
             '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//p[@class="ad-description"]/text()').extract()
         result = ""
@@ -185,3 +185,10 @@ class OfertasSpider(scrapy.Spider):
         for item in images:
             result.append("http://ofertas.cu" + item)
         return result
+
+    def parse_currency(self, price):
+        if 'CUC' in price:
+            return "CUC"
+        elif 'CUP' in price:
+            return "CUP"
+        return ""

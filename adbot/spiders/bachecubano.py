@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from functools import partial
-
+import string
 import scrapy
 from dateutil.parser import parse
 
@@ -11,13 +11,14 @@ class BachecubanoSpider(scrapy.Spider):
     name = 'bachecubano'
     allowed_domains = ['bachecubano.com']
     start_urls = ['https://www.bachecubano.com/']
-    depth = 0
+    level = 0
 
     def parse(self, response):
         for href in response.xpath(
                 '//section[@class="section"]//div[@class="columns"]//div[@class="columns"]//a/attribute::href').extract():
             yield scrapy.Request(response.urljoin(href),
-                                 callback=partial(self.parse_page, depth=int(self.depth)))
+                                 callback=self.parse_page,
+                                 meta={'level': self.level})
 
     def parse_page(self, response, depth=0):
         for href in response.xpath(
@@ -34,7 +35,7 @@ class BachecubanoSpider(scrapy.Spider):
         item['title'] = response.xpath(
             '//div[@class="media"]//div[@class="media-content"]//p[@itemprop="name"]/a/text()').extract()
 
-        item['body'] = response.xpath('//div[@class="content subtitle box"]/text()').extract()
+        item['body'] = self.parse_body(response)
 
         item['price'] = {}
 
@@ -66,8 +67,29 @@ class BachecubanoSpider(scrapy.Spider):
             images = response.xpath(
                 '//div[@class="column is-3-tablet is-3-desktop is-3-widescreen"]//div[@class="card-image"]//figure[@class="image"]//img/attribute::src').extract()
 
-        item['images'] = images
+        item['images'] = self.parse_images(response)
 
         # print(item)
 
         yield item
+
+    def parse_body(self, response):
+        body = response.xpath('//div[@class="content subtitle box"]/text()').extract()
+        result = ""
+        for item in body:
+            s = item
+            printable = set(string.printable)
+            filter(lambda x: x in printable, s)
+            # s = s.rstrip()
+            result += s
+
+        return result
+
+    def parse_images(self, response):
+        images = response.xpath(
+            '//div[@class="column is-3-tablet is-3-desktop is-3-widescreen"]//div[@style="display: none;"]//a/attribute::href').extract()
+        if len(images) == 0:
+            images = response.xpath(
+                '//div[@class="column is-3-tablet is-3-desktop is-3-widescreen"]//div[@class="card-image"]//figure[@class="image"]//img/attribute::src').extract()
+
+        return images
