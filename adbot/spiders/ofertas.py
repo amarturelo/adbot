@@ -97,11 +97,6 @@ class OfertasSpider(scrapy.Spider):
             yield scrapy.Request(response.urljoin(href),
                                  callback=self.parse_page,
                                  meta={'level': self.level})
-        # next = response.xpath('//ul[@class="categories"]//a/attribute::href').extract()[1]
-        # request = scrapy.Request(response.urljoin(next),
-        #                          callback=self.parse_page,
-        #                          meta={'level': self.depth})
-        # yield request
 
     def parse_page(self, response):
         level = int(response.meta['level'])
