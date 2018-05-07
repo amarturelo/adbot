@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import scrapy
-import string
 from dateutil.parser import parse
 from money_parser import price_str
 
