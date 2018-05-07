@@ -5,6 +5,8 @@ from dateutil.parser import parse
 from money_parser import price_str
 
 from adbot.items import AdbotItem
+from adbot.spiders.Constants import Tags
+from adbot.spiders.Constants import Key
 
 
 class OfertasSpider(scrapy.Spider):
@@ -16,80 +18,79 @@ class OfertasSpider(scrapy.Spider):
     level = 0
 
     map_category = {
-        '/c/390/pc/': "10",
-        '/c/391/laptop/': "1012",
-        '/c/392/monitores/': "10",
-        '/c/393/tablets/': "1011",
-        '/c/394/celulares-accesorios/': "1011",
-        '/c/395/impresoras/': "10",
-        '/c/396/fotocopiadoras/': "10",
-        '/c/397/modem-red/': "10",
-        '/c/398/cd-dvd-bluray/': "10",
-        '/c/399/audio/': "10",
-        '/c/400/consolas-videojuegos/': "10",
-        '/c/401/accesorios-componentes/': "10",
-        '/c/402/centros-reparaciones/': "80",
-        '/c/403/otros/': "10",
-        '/c/406/tv/': "1013",
-        '/c/407/reproductores-video/': "10",
-        '/c/408/lavadoras/': "1014",
-        '/c/409/refrigeradores/': "1014",
-        '/c/410/planchas/': "1014",
-        '/c/411/cocinas/': "1014",
-        '/c/412/microwaves/': "1014",
-        '/c/413/cafeteras-electricas/': "1014",
-        '/c/414/taller-reparaciones/': "80",
-        '/c/415/otros/': "1014",
+        '/c/390/pc/': [Tags.COMPUTADORAS, Tags.PC],
+        '/c/391/laptop/': [Tags.COMPUTADORAS, Tags.LAPTOP],
+        '/c/392/monitores/': [Tags.COMPUTADORAS, Tags.MONITORES],
+        '/c/393/tablets/': [Tags.COMPUTADORAS, Tags.TABLETS],
+        '/c/394/celulares-accesorios/': [Tags.COMPUTADORAS, Tags.CELURARES, Tags.ACCESORIOS],
+        '/c/395/impresoras/': [Tags.COMPUTADORAS, Tags.IMPRESORAS],
+        '/c/396/fotocopiadoras/': [Tags.COMPUTADORAS, Tags.FOTOCOPIADORAS],
+        '/c/397/modem-red/': [Tags.COMPUTADORAS, Tags.MODEM, Tags.RED],
+        '/c/399/audio/': [Tags.COMPUTADORAS, Tags.AUDIO],
+        '/c/400/consolas-videojuegos/': [Tags.COMPUTADORAS, Tags.CONSOLAS, Tags.VIDEO_JUEGOS],
+        '/c/401/accesorios-componentes/': [Tags.COMPUTADORAS, Tags.ACCESORIOS, Tags.COMPONENTES],
+        '/c/402/centros-reparaciones/': [Tags.COMPUTADORAS, Tags.SERVICIOS, Tags.TALLER],
+        '/c/403/otros/': [Tags.COMPUTADORAS, Tags.OTROS],
+        '/c/406/tv/': [Tags.ELECTRODOMOESTICOS, Tags.TV],
+        '/c/407/reproductores-video/': [Tags.ELECTRODOMOESTICOS, Tags.REPRODUCTORES_DE_VIDEO],
+        '/c/408/lavadoras/': [Tags.ELECTRODOMOESTICOS, Tags.LAVADORAS, Tags.HOGAR],
+        '/c/409/refrigeradores/': [Tags.ELECTRODOMOESTICOS, Tags.REFRIGERADORES, Tags.HOGAR],
+        '/c/410/planchas/': [Tags.ELECTRODOMOESTICOS, Tags.PLANCHAS, Tags.HOGAR],
+        '/c/411/cocinas/': [Tags.ELECTRODOMOESTICOS, Tags.CONINAS, Tags.HOGAR],
+        '/c/412/microwaves/': [Tags.ELECTRODOMOESTICOS, Tags.MICROWAVES, Tags.HOGAR],
+        '/c/413/cafeteras-electricas/': [Tags.ELECTRODOMOESTICOS, Tags.CAFETERAS_ELECTRICAS, Tags.HOGAR],
+        '/c/414/taller-reparaciones/': [Tags.ELECTRODOMOESTICOS, Tags.TALLER],
+        '/c/415/otros/': [Tags.ELECTRODOMOESTICOS, Tags.OTROS],
 
-        '/c/348/alquiler/': "7071",
-        '/c/349/arrendamiento/': "7071",
-        '/c/350/compra-venta-viviendas/': "7072",
-        '/c/351/construccion-mantenimiento/': "70",
-        '/c/352/garajes-estacionamientos/': "70",
-        '/c/353/terrenos-parcelas/': "70",
-        '/c/354/permutas/': "7073",
-        '/c/355/otros/': "70",
+        '/c/348/alquiler/': [Tags.INMUEBLES, Tags.ALQUILER],
+        '/c/349/arrendamiento/': [Tags.INMUEBLES, Tags.ARRENDAMIENTO],
+        '/c/350/compra-venta-viviendas/': [Tags.INMUEBLES, Tags.COMPRA, Tags.VENTA],
+        '/c/351/construccion-mantenimiento/': [Tags.INMUEBLES, Tags.MANTENIMIENTO, Tags.CONTRUCCION],
+        '/c/352/garajes-estacionamientos/': [Tags.INMUEBLES, Tags.ESTACIONAMIENTOS, Tags.GARAJES],
+        '/c/353/terrenos-parcelas/': [Tags.INMUEBLES, Tags.TERRENOS, Tags.PARCELAS],
+        '/c/354/permutas/': [Tags.INMUEBLES, Tags.PERMUTAS],
+        '/c/355/otros/': [Tags.INMUEBLES, Tags.OTROS],
 
-        '/c/404/ofrezco/': "82",
-        '/c/405/necesito/': "82",
-        '/c/377/domesticos/': "81",
-        '/c/376/cuidados-domicilio/': "81",
-        '/c/378/gastronomia/': "81",
-        '/c/379/jardineria/': "81",
-        '/c/380/organizacion-eventos/': "81",
-        '/c/381/salud-belleza/': "81",
-        '/c/382/cursos/': "81",
-        '/c/383/traduccion-edicion/': "81",
-        '/c/384/repasadores/': "81",
-        '/c/385/taxis/': "81",
-        '/c/386/viajes-turismo/': "81",
-        '/c/387/mudanza/': "81",
-        '/c/388/otros/': "81",
+        '/c/404/ofrezco/': [Tags.EMPLEO, Tags.OFREZCO],
+        '/c/405/necesito/': [Tags.EMPLEO, Tags.NECESITO],
+        '/c/377/domesticos/': [Tags.SERVICIOS, Tags.DOMESTICOS],
+        '/c/376/cuidados-domicilio/': [Tags.SERVICIOS, Tags.DOMESTICOS, Tags.CUIDADOS_A_DOMICILIO],
+        '/c/378/gastronomia/': [Tags.SERVICIOS, Tags.GASTRONOMIA],
+        '/c/379/jardineria/': [Tags.SERVICIOS, Tags.JARDINERIA],
+        '/c/380/organizacion-eventos/': [Tags.SERVICIOS, Tags.ORGANIZACION_DE_EVENTOS],
+        '/c/381/salud-belleza/': [Tags.SERVICIOS, Tags.BELLEZA, Tags.SALUD],
+        '/c/382/cursos/': [Tags.SERVICIOS, Tags.CURSOS],
+        '/c/383/traduccion-edicion/': [Tags.SERVICIOS, Tags.TRADUCCION, Tags.EDICION],
+        '/c/384/repasadores/': [Tags.SERVICIOS, Tags.REPASADORES],
+        '/c/385/taxis/': [Tags.SERVICIOS, Tags.TAXIS, Tags.TRANSPORTE],
+        '/c/386/viajes-turismo/': [Tags.SERVICIOS, Tags.VIAJES, Tags.TURISMO],
+        '/c/387/mudanza/': [Tags.SERVICIOS, Tags.MUDANZA],
+        '/c/388/otros/': [Tags.SERVICIOS, Tags.OTROS],
 
-        '/c/367/autos/': "60",
-        '/c/368/camiones/': "60",
-        '/c/369/jeep/': "60",
-        '/c/370/motos/': "60",
-        '/c/371/embarcaciones/': "60",
-        '/c/372/bicicletas/': "60",
-        '/c/373/partes-piezas/': "60",
-        '/c/374/taller/': "60",
-        '/c/375/otros/': "60",
+        '/c/367/autos/': [Tags.TRANSPORTE, Tags.AUTOS],
+        '/c/368/camiones/': [Tags.TRANSPORTE, Tags.CAMIONES],
+        '/c/369/jeep/': [Tags.TRANSPORTE, Tags.JEEP],
+        '/c/370/motos/': [Tags.TRANSPORTE, Tags.MOTOS],
+        '/c/371/embarcaciones/': [Tags.TRANSPORTE, Tags.EMBARCACIONES],
+        '/c/372/bicicletas/': [Tags.TRANSPORTE, Tags.BICLICLETAS],
+        '/c/373/partes-piezas/': [Tags.TRANSPORTE, Tags.PIEZAS, Tags.PARTES],
+        '/c/374/taller/': [Tags.TRANSPORTE, Tags.SERVICIOS, Tags.TALLER],
+        '/c/375/otros/': [Tags.TRANSPORTE, Tags.OTROS],
 
-        '/c/364/ropas-zapatos-accesorios/': "30",
-        '/c/363/perfumeria-cosmeticos/': "30",
-        '/c/361/joyas/': "30",
-        '/c/357/articulos-ninos/': "30",
+        '/c/364/ropas-zapatos-accesorios/': [Tags.MISELANEAS, Tags.ROPAS, Tags.ZAPATOS, Tags.ACCESORIOS],
+        '/c/363/perfumeria-cosmeticos/': [Tags.MISELANEAS, Tags.PERFUMERIA, Tags.COSMETICOS],
+        '/c/361/joyas/': [Tags.MISELANEAS, Tags.JOYAS],
+        '/c/357/articulos-ninos/': [Tags.MISELANEAS, Tags.INFANTILES],
 
-        '/c/365/muebles-decoracion/': "20",
-        '/c/359/articulos-hogar/': "20",
+        '/c/365/muebles-decoracion/': [Tags.MISELANEAS, Tags.MUEBLES, Tags.DECORACION],
+        '/c/359/articulos-hogar/': [Tags.MISELANEAS, Tags.HOGAR, Tags.ARTICULOS],
 
-        '/c/356/arte/': "40",
-        '/c/358/articulos-deportivos/': "40",
+        '/c/356/arte/': [Tags.MISELANEAS, Tags.ARTE],
+        '/c/358/articulos-deportivos/': [Tags.MISELANEAS, Tags.DEPORTES, Tags.ARTICULOS],
 
-        '/c/366/otros/': "90",
+        '/c/366/otros/': [Tags.MISELANEAS, Tags.OTROS],
 
-        '/c/360/animales-mascotas/': "50"
+        '/c/360/animales-mascotas/': [Tags.MISELANEAS, Tags.ANIMALES, Tags.MASCOTAS]
     }
 
     def parse(self, response):
@@ -100,11 +101,11 @@ class OfertasSpider(scrapy.Spider):
 
     def parse_page(self, response):
         level = int(response.meta['level'])
-        category = self.categorize(response.request.url)
+        tags = self.parse_tags(response.request.url)
         for href in response.xpath('//div[@class="listing list-mode"]//a/attribute::href').extract():
             yield scrapy.Request(response.urljoin(href),
                                  callback=self.parse_item,
-                                 meta={'category': category})
+                                 meta={Key.TAGS: tags})
 
         if level > 0:
             n = response.xpath('//ul[@class="pagination"]//a[@title="Siguiente"]/attribute::href').extract()
@@ -115,52 +116,77 @@ class OfertasSpider(scrapy.Spider):
 
     def parse_item(self, response):
         item = AdbotItem()
-        item['title'] = response.xpath(
-            '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//h2/text()').extract()
 
-        item['body'] = self.parse_body(response)
+        # parse title
+        item[Key.TITLE] = self.parse_title(response)
 
-        item['price'] = {}
+        # parse body
+        item[Key.BODY] = self.parse_body(response)
 
-        price = response.xpath(
-            '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//p[@class="price"]/text()').extract()
+        # parse from
+        item[Key.FROM] = {}
+        item[Key.FROM] = self.parse_from(response)
 
-        # if len(price) == 1:
-        #     price = price[0].split(" ")
-        #     item['price']['value'] = float(price[0].replace("$", "").replace(",", "."))
-        #     item['price']['currency'] = price[1]
+        # try parse date
+        self.parse_date(response, item)
 
-        if len(price) == 1:
-            price = price[0].replace(" ", "")
+        # parse url
+        item[Key.URL] = response.url
 
-            value = price_str(price)
-            item['price']['value'] = value
-            item['price']['currency'] = self.parse_currency(price)
+        # parse tags
+        item[Key.TAGS] = response.meta[Key.TAGS]
 
-        date = response.xpath(
-            '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//time/attribute::datetime').extract()
-        if len(date) == 1:
-            date = date[0]
-            item['date'] = parse(date)  # dateparser.parse(date, languages=['es'])
+        item[Key.META] = {}
 
-        item['contact'] = {}
-        item['contact']['name'] = response.xpath('//div[@class="ad-reply-options"]//p[@class="lead"]/text()').extract()
-        item['contact']['phone'] = response.xpath('//div[@class="ad-reply-options"]//a//strong/text()').extract()
+        # try parse price
+        self.parse_meta_price(response, item)
 
-        item['images'] = self.parse_images(response)
-
-        item['url'] = response.url
-        item['category'] = response.meta['category']
+        # try parse images
+        self.parse_meta_images(response, item)
 
         yield item
 
-    def categorize(self, url):
+    @staticmethod
+    def parse_title(response):
+        title = response.xpath(
+            '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//h2/text()').extract()
+        result = ""
+        for item in title:
+            s = item
+
+            printable = set(string.printable)
+            filter(lambda x: x in printable, s)
+            result += s + "\n"
+
+        return result
+
+    @staticmethod
+    def parse_from(response):
+        f = {Key.NAME: response.xpath('//div[@class="ad-reply-options"]//p[@class="lead"]/text()').extract(),
+             Key.PHONE: response.xpath('//div[@class="ad-reply-options"]//a//strong/text()').extract()}
+        return f
+
+    def parse_meta_price(self, response, item):
+        xpath = response.xpath(
+            '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//p[@class="price"]/text()').extract()
+        price = {}
+
+        if len(xpath) == 1:
+            xpath = xpath[0].replace(" ", "")
+
+            price[Key.VALUE] = float(price_str(xpath))
+            price[Key.CURRENCY] = self.parse_meta_price_currency(xpath)
+
+            item[Key.META][Key.PRICE] = price
+
+    def parse_tags(self, url):
         for entry in self.map_category.keys():
             if url and entry in url:
                 return self.map_category[entry]
         return 0
 
-    def parse_body(self, response):
+    @staticmethod
+    def parse_body(response):
         body = response.xpath(
             '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//p[@class="ad-description"]/text()').extract()
         result = ""
@@ -173,17 +199,30 @@ class OfertasSpider(scrapy.Spider):
 
         return result
 
-    def parse_images(self, response):
+    @staticmethod
+    def parse_meta_images(response, item):
+        item[Key.META][Key.IMAGE] = []
+
         images = response.xpath(
             '//div[@class="row center gallery"]//div[@class="col-xs-6 col-sm-3"]//a/attribute::href').extract()
-        result = []
-        for item in images:
-            result.append("http://ofertas.cu" + item)
-        return result
+        if len(images) > 0:
+            result = []
+            for i in images:
+                result.append("http://ofertas.cu" + i)
+            item[Key.META][Key.IMAGE] = result
 
-    def parse_currency(self, price):
+    @staticmethod
+    def parse_meta_price_currency(price):
         if 'CUC' in price:
             return "CUC"
         elif 'CUP' in price:
             return "CUP"
         return ""
+
+    @staticmethod
+    def parse_date(response, item):
+        date = response.xpath(
+            '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//time/attribute::datetime').extract()
+        if len(date) == 1:
+            date = date[0]
+            item[Key.DATE] = parse(date)  # dateparser.parse(date, languages=['es'])
