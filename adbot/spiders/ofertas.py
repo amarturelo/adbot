@@ -4,9 +4,10 @@ import string
 from dateutil.parser import parse
 from money_parser import price_str
 
+from adbot.spiders.utils import Utils
 from adbot.items import AdbotItem
-from adbot.spiders.Constants import Tags
-from adbot.spiders.Constants import Key
+from adbot.spiders.constants import Tags
+from adbot.spiders.constants import Key
 
 
 class OfertasSpider(scrapy.Spider):
@@ -150,15 +151,7 @@ class OfertasSpider(scrapy.Spider):
     def parse_title(response):
         title = response.xpath(
             '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//h2/text()').extract()
-        result = ""
-        for item in title:
-            s = item
-
-            printable = set(string.printable)
-            filter(lambda x: x in printable, s)
-            result += s + "\n"
-
-        return result
+        return Utils.join_text(title)
 
     @staticmethod
     def parse_from(response):
@@ -189,15 +182,7 @@ class OfertasSpider(scrapy.Spider):
     def parse_body(response):
         body = response.xpath(
             '//div[@class="ad-details"]//div[@class="col-xs-12 col-sm-9 listing-wrapper"]//p[@class="ad-description"]/text()').extract()
-        result = ""
-        for item in body:
-            s = item
-
-            printable = set(string.printable)
-            filter(lambda x: x in printable, s)
-            result += s + "\n"
-
-        return result
+        return Utils.join_text(body)
 
     @staticmethod
     def parse_meta_images(response, item):
