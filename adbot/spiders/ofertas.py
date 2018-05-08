@@ -154,8 +154,9 @@ class OfertasSpider(scrapy.Spider):
 
     @staticmethod
     def parse_from(response):
-        f = {Key.NAME: response.xpath('//div[@class="ad-reply-options"]//p[@class="lead"]/text()').extract(),
-             Key.PHONE: response.xpath('//div[@class="ad-reply-options"]//a//strong/text()').extract()}
+        f = {Key.NAME: Utils.join_text(
+            response.xpath('//div[@class="ad-reply-options"]//p[@class="lead"]/text()').extract()),
+             Key.PHONE: Utils.join_text(response.xpath('//div[@class="ad-reply-options"]//a//strong/text()').extract())}
         return f
 
     def parse_meta_price(self, response, item):

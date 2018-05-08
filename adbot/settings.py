@@ -64,10 +64,10 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#     'scrapyelasticsearch.scrapyelasticsearch.ElasticSearchPipeline': 300,
-#     # 'adbot.pipelines.AdbotPipeline': 500,
-# }
+ITEM_PIPELINES = {
+    'scrapyelasticsearch.scrapyelasticsearch.ElasticSearchPipeline': 300,
+    # 'adbot.pipelines.AdbotPipeline': 500,
+}
 #
 #ELASTICSEARCH_SERVERS = ['https://woarlrysp7:90eynkfy8e@ads-9413048204.us-east-1.bonsaisearch.net']
 ELASTICSEARCH_SERVERS = ['http://10.3.201.213:9200']

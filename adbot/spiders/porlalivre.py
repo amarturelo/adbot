@@ -9,7 +9,9 @@ from adbot.items import AdbotItem
 class PorlalivreSpider(scrapy.Spider):
     name = 'porlalivre'
     allowed_domains = ['porlalivre.com']
-    start_urls = ['https://porlalivre.com/']
+    start_urls = [
+        'https://porlalivre.com/'
+    ]
 
     level = 0
 
