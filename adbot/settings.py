@@ -64,9 +64,21 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'adbot.pipelines.AdbotPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'scrapyelasticsearch.scrapyelasticsearch.ElasticSearchPipeline': 300,
+    # 'adbot.pipelines.AdbotPipeline': 500,
+}
+#
+#ELASTICSEARCH_SERVERS = ['https://woarlrysp7:90eynkfy8e@ads-9413048204.us-east-1.bonsaisearch.net']
+ELASTICSEARCH_SERVERS = ['http://10.3.201.213:9200']
+#ELASTICSEARCH_SERVERS = ['https://ads-9413048204.us-east-1.bonsaisearch.net']
+ELASTICSEARCH_INDEX = 'ads'
+#ELASTICSEARCH_INDEX_DATE_FORMAT = '%Y-%m'
+ELASTICSEARCH_TYPE = 'items'
+ELASTICSEARCH_UNIQ_KEY = 'url'  # Custom unique key
+
+# can also accept a list of fields if need a composite key
+#ELASTICSEARCH_UNIQ_KEY = ['url', 'id']
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
